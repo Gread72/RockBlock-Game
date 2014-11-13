@@ -1,0 +1,27 @@
+fileFormatVersion: 2
+guid: 18ba721a1560b4367b72f8f71fdb38ea
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - cube1_1: {instanceID: 0}
+  - cube1_2: {instanceID: 0}
+  - cube1_3: {instanceID: 0}
+  - cube1_4: {instanceID: 0}
+  - cube2_1: {instanceID: 0}
+  - cube2_2: {instanceID: 0}
+  - cube2_3: {instanceID: 0}
+  - cube2_4: {instanceID: 0}
+  - cube3_1: {instanceID: 0}
+  - cube3_2: {instanceID: 0}
+  - cube3_3: {instanceID: 0}
+  - cube3_4: {instanceID: 0}
+  - cube4_1: {instanceID: 0}
+  - cube4_2: {instanceID: 0}
+  - cube4_3: {instanceID: 0}
+  - cube4_4: {instanceID: 0}
+  - blocker: {instanceID: 0}
+  - customFont: {fileID: 12800000, guid: 060ac5815e03447a5baa862132f87c98, type: 3}
+  - spaceIntro: {fileID: 8300000, guid: 9d5e2c5b9de334c5f87f4d2aab56b0e0, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
