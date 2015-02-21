@@ -2,13 +2,11 @@
 using System.Collections;
 
 public class GameStatus : MonoBehaviour {
-	
-	//public int gameNumber = 0;
+
 	public int gamesPlayerWins;
 	public int gamesPlayerLoses;
 	public int gamesDraw;
-	
-	//private bool changed = true;
+	public bool isFirstStart = true;
 	
 	void Awake() {
         DontDestroyOnLoad(transform.gameObject);

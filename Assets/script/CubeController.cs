@@ -46,14 +46,7 @@ public class CubeController : MonoBehaviour {
 		}
 		
 		if(isReset){
-			//Quaternion target = Quaternion.Euler (0, 0, 0);
 			transform.rotation = Quaternion.Euler (0, 0, 0);
-			//Quaternion.Slerp(transform.rotation, target,
-            //                       Time.deltaTime * smooth);
-			//if(transform.rotation == target){
-			//	isReset = false;
-			//}
-			
 		}
 	}
 	
@@ -98,78 +91,9 @@ public class CubeController : MonoBehaviour {
 	
 	public void reset(){
 		isReset = true;
-		enabledPiece = false;
-		cubeData = "";
 		enabledPiece = true;
-		//StartCoroutine("readForNewGame");
+		cubeData = "";
+		rotatePieceForUser = false;	
+		rotatePieceForCPU = false;
 	}
-	
-	
-	/*	
-	IEnumerator readForNewGame(){
-		yield return new WaitForSeconds(5);
-		
-		isReset = false;
-	}
-	*/
-	
-	/*
-	void OnTriggerStay(Collider other){
-		print ("OnTriggerStay");
-	}
-	*/
-	
-	/*
-	float tiltAroundZ = Input.GetAxis("Horizontal") * tiltAngle;
-	float tiltAroundX = Input.GetAxis("Vertical") * tiltAngle;
-	Quaternion target = Quaternion.Euler (tiltAroundX, 0, tiltAroundZ);
-	// Dampen towards the target rotation
-	transform.rotation = Quaternion.Slerp(transform.rotation, target,
-                               Time.deltaTime * smooth);
-	*/
-	
-	/*
-	// Update is called once per frame
-	void Update () {
-		
-		
-		if(Input.GetMouseButtonDown(0)){
-			print ("Mouse Down");
-			rotatePieceForUser = true;
-			
-		}
-		
-		if(Input.GetMouseButtonDown(1)){
-			print ("Mouse Down");
-			rotatePieceForUser = true;
-		}
-		
-		if(rotatePieceForUser){
-			//this.transform.Rotate(Vector3.down);
-			//rotateY = this.transform.rotation.y + 1;
-			//this.transform.rotation =
-			//new Vector3(0, 1, 0
-			//this.transform.rotation.y + 1;
-			
-			Quaternion target = Quaternion.Euler (0, targetDegree, 0);
-			transform.rotation = Quaternion.Slerp(transform.rotation, target,
-                                   Time.deltaTime * smooth);
-			
-			print ("rotation Value " + this.transform.rotation.y);
-		}
-		
-		if(targetDegree == 90){
-			if(this.transform.rotation.y >= 0.7){
-				rotatePieceForUser = false;
-				targetDegree = 0;
-			}
-		}else if(targetDegree == 0){
-			if(this.transform.rotation.y <= 0.01){
-				rotatePieceForUser = false;
-				targetDegree = 90;
-			}
-		}
-		//print ("targetDegree " + targetDegree);
-	}
-	*/
 }

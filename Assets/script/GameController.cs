@@ -8,6 +8,8 @@
 using UnityEngine;
 using System.Collections;
 
+public delegate void GameEndingEventHandler(string response);
+
 [RequireComponent(typeof(AudioSource))]
 public class GameController : MonoBehaviour {
 	
@@ -34,7 +36,7 @@ public class GameController : MonoBehaviour {
 	
 	string response = "";
 	
-	bool isBegining = true;
+	bool isBegining = false;
 	
 	bool CPUblockIsMoving = false;
 	
@@ -59,21 +61,19 @@ public class GameController : MonoBehaviour {
 	
 	private bool isResetting = false;
 	
-	public GameObject gameState;
-	public GameStatus currentGameStatus;
+	private GameObject gameState;
+	private GameStatus currentGameStatus;
 	
 	public Material[] materials;
 	private Material selectedMaterial;
+
+	public GameEndingEventHandler onGameEnding;
+
+	public ParticleSystem starSystem;
 	
 	void Awake(){
-		
 		startCameraPosition = new Vector3( 2.097379f, -2.172393f, 20f );
 		gameCameraPosition = new Vector3( 2.097379f, -2.172393f, -0.207406f );
-		
-		//materials = Resources.LoadAll("Materials", typeof(Material));
-		
-		//myMaterial = materials[0] as Material;
-		//print ("materials.Length " + materials.Length);
 		int ranNum = Random.Range(0, materials.Length); 
 		selectedMaterial = materials[ranNum];
 	}
@@ -84,20 +84,20 @@ public class GameController : MonoBehaviour {
 		Camera.main.transform.position = startCameraPosition; 
 		addEventsToBlockControllers();
 		
-		startGamePlay();
-		
-		
-	}
-	
-	void startGamePlay(){
-		// play initial audio
-		AudioSource.PlayClipAtPoint(spaceIntroAudio, new Vector3(5, 1, 2));
-		
 		gameState = GameObject.FindGameObjectsWithTag("Status")[0];
 		currentGameStatus = gameState.GetComponent<GameStatus>();
 		currentGameStatus.gameNumber++;
+		
+		if(currentGameStatus.isFirstStart == true){
+			// play initial audio
+			AudioSource.PlayClipAtPoint(spaceIntroAudio, new Vector3(5, 1, 2));
+		}
+
+		starSystem.Play();
+
+		isBegining = true;
 	}
-	
+
 	// add delegate event handlers to Block pieces
 	void addEventsToBlockControllers(){
 		for (int i = 0; i <= 3; i++){
@@ -134,9 +134,14 @@ public class GameController : MonoBehaviour {
 
 		// if isBeginning is done (i.e form start button is pressed), move camera into position
 		if(!isBegining){
-			Camera.main.transform.position = Vector3.Lerp(transform.position, gameCameraPosition, smooth * Time.deltaTime);
+			if(transform.position != gameCameraPosition){
+				Camera.main.transform.position = Vector3.Lerp(transform.position, gameCameraPosition, smooth * Time.deltaTime);
+				StartCoroutine("stopStarSystem");
+			}else{
+				isBegining = true;
+			}
 		}
-		
+	
 		if(isResetting){
 			Camera.main.transform.position = Vector3.Lerp(transform.position, startCameraPosition, smooth * Time.deltaTime);
 			if(Camera.main.transform.position == startCameraPosition){
@@ -177,40 +182,20 @@ public class GameController : MonoBehaviour {
 			}
 		}
 	}
-	
-	// handle GUI
-	void OnGUI(){
-		// get form positon
-		int xPos = Screen.width / 2 - 200;
-		int yPos = Screen.height / 2 - 100;
-		
-		// if response is give (i.e. game state has changed to end) 
-		 if(response != ""){
-			 GUI.Box(new Rect(xPos, yPos, 400, 200), "");
-			 GUI.Label(new Rect(xPos, yPos + 20, 400, 200),response,style);
-			 if (GUI.Button(new Rect(xPos + (400 / 2 - 100), yPos + (200 / 2) + 40,200,40),"Play Again?")){
-				Application.LoadLevel("RockBlockGame");
-				//resetGame();
-			 }
-		 }
-		
-		 // beginning state - form is displayed - start button
-		 if(isBegining){
-			 GUI.Box(new Rect(xPos, yPos, 420, 200), "");
-			 GUI.Label(new Rect(xPos, yPos + 20, 420, 200),"Rock With Your Block Out!\n\nTo win: 4 across, down, diagonal,\nor have more selected than\nyour opponent, The Universe.",style);
-			 if (GUI.Button(new Rect(xPos + (400 / 2 - 100), yPos + (200 / 2) + 40,200,30),"Play Game!")){
-				isBegining = false;
-				
-				CPUblockIsMoving = true;
-				blocker.transform.position = new Vector3(3,-2.5f,9); // enable blocker
-				
-				StartCoroutine("callStartGame");
-			 }
-		
-		 }
-		 
+
+	IEnumerator stopStarSystem(){
+		yield return new WaitForSeconds(2);
+		starSystem.Stop();
 	}
-	
+
+	public void enablePlay(){
+		isBegining = false;
+		CPUblockIsMoving = true;
+		blocker.transform.position = new Vector3(3,-2.5f,9); // enable blocker
+		
+		StartCoroutine("callStartGame");
+	}
+
 	// "Timed" subroutinue
 	IEnumerator callStartGame(){
 		yield return new WaitForSeconds(2);
@@ -222,42 +207,15 @@ public class GameController : MonoBehaviour {
 	}
 	
 	void resetGame(){
-		// reset game back to original starting state
-		Vector3 resetPosition = new Vector3(0,0,0); 
-		
-		list = new string[4,4];
-		
-		for (int i = 0; i <= 3; i++){
-			for (int j = 0; j <= 3; j++){
-				
-				var x = i + 1;
-				var y = j + 1;
-				
-				GameObject currentPiece = getPiece(x, y);
-				//currentPiece.GetComponent<CubeController>().enabledPiece = false;
-				//currentPiece.GetComponent<CubeController>().cubeData = "";
-				//currentPiece.GetComponent<CubeController>().enabledPiece = false;
-				currentPiece.GetComponent<CubeController>().reset();
-			}
-		}
-		
-		//isResetting = true;
+		starSystem.Play();
 		StartCoroutine("readForNewGame");
 	}
-	
-	
+
 	IEnumerator readForNewGame(){
-		yield return new WaitForSeconds(5);
-		
-		userWon = false;
-		cpuWon = false;
-		response = "";
-		isBegining = true;
-		startGamePlay();
-		//isResetting = true;
+		yield return new WaitForSeconds(1);
+		isResetting = true;
 	}
-	
-	
+
 	void setCPUPiece(int selectedX, int selectedY){
 		
 		for (int i = 0; i <= 3; i++){
@@ -449,15 +407,11 @@ public class GameController : MonoBehaviour {
 				}
 			}
 		}
+
+		//print("userCount: " + userCount + "\n cpuCount: " + cpuCount + "\n piecesFilled: " + piecesFilled);
 		
-		if(piecesFilled == 16){
-			if(userCount > cpuCount){
-				gameEnding("usr");
-			}else if(userCount < cpuCount){
-				gameEnding("cpu");
-			}else{
-				gameEnding("draw");
-			}
+		if(piecesFilled >= 12){
+			gameEnding("draw");
 		}
 		
 	}
@@ -484,7 +438,8 @@ public class GameController : MonoBehaviour {
 			AudioSource.PlayClipAtPoint(drawAudio, new Vector3(5, 1, 2)); 
 			break;
 		 }
-		 
+		resetGame();
+		onGameEnding(response);
 	}
 	
 	// check whether player has piece in vertical/horizontal direction

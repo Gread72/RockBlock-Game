@@ -1,19 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GameStatusDisplay : MonoBehaviour {
 	
 	public GameObject gameState;
 	public GameStatus currentGameStatus;
-	
-	public GUIStyle style;
+	private Text statusTxt;
+	/*public GUIStyle style;*/
 	
 	void Start () {
+		statusTxt = GetComponent<Text>();
 		gameState = GameObject.FindGameObjectsWithTag("Status")[0];
 		currentGameStatus = gameState.GetComponent<GameStatus>();
+
+		ResetStatus();
+	}
+
+	void ResetStatus(){
+		statusTxt.text = "Status:\nGames Played: " + currentGameStatus.gameNumber + 
+			"\nLoses: " + currentGameStatus.gamesPlayerLoses + " Wins: " + currentGameStatus.gamesPlayerWins + 
+			" Draws: " + currentGameStatus.gamesDraw;
 	}
 	
-	void OnGUI(){
+	/*void OnGUI(){
 		//print (Time.deltaTime * 100);
 		
 		// get form positon
@@ -27,5 +37,5 @@ public class GameStatusDisplay : MonoBehaviour {
 		//changed = false;
 	
 		
-	}
+	}*/
 }
