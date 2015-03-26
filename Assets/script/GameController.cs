@@ -11,9 +11,11 @@ using System.Collections;
 public delegate void GameEndingEventHandler(string response);
 
 [RequireComponent(typeof(AudioSource))]
-public class GameController : MonoBehaviour {
-	
-	public GameObject cube1_1;
+public class GameController : MonoBehaviour
+{
+
+    #region public variables
+    public GameObject cube1_1;
 	public GameObject cube1_2;
 	public GameObject cube1_3;
 	public GameObject cube1_4;
@@ -29,49 +31,38 @@ public class GameController : MonoBehaviour {
 	public GameObject cube4_2;
 	public GameObject cube4_3;
 	public GameObject cube4_4;
-	
 	public GameObject blocker;
-	
-	string[,] list = new string[4,4];
-	
-	string response = "";
-	
-	bool isBegining = false;
-	
-	bool CPUblockIsMoving = false;
-	
-	public float count = 0;
-	
-	public GUIStyle style;
-	
-	public AudioClip spaceIntroAudio;
-	public AudioClip userSelectAudio;
-	public AudioClip cpuSelectAudio;
-	
-	public AudioClip cpuWonAudio;
-	public AudioClip userWonAudio;
-	public AudioClip drawAudio;
-	
+    public float count = 0;
+    public GUIStyle style;
+    public AudioClip spaceIntroAudio;
+    public AudioClip userSelectAudio;
+    public AudioClip cpuSelectAudio;
+    public AudioClip cpuWonAudio;
+    public AudioClip userWonAudio;
+    public AudioClip drawAudio;
+    public Material[] materials;
+    public GameEndingEventHandler onGameEnding;
+    public ParticleSystem starSystem;
+    #endregion
+
+    #region private variables
+    private string[,] list = new string[4,4];
+	private string response = "";
+	private bool isBegining = false;
+	private bool CPUblockIsMoving = false;
 	private bool userWon = false;
 	private bool cpuWon = false;
-	
 	private float smooth = 2.0f;
 	private Vector3 startCameraPosition;
 	private Vector3 gameCameraPosition;
-	
 	private bool isResetting = false;
-	
 	private GameObject gameState;
 	private GameStatus currentGameStatus;
-	
-	public Material[] materials;
 	private Material selectedMaterial;
+    #endregion
 
-	public GameEndingEventHandler onGameEnding;
 
-	public ParticleSystem starSystem;
-	
-	void Awake(){
+	public void Awake(){
 		startCameraPosition = new Vector3( 2.097379f, -2.172393f, 20f );
 		gameCameraPosition = new Vector3( 2.097379f, -2.172393f, -0.207406f );
 		int ranNum = Random.Range(0, materials.Length); 
@@ -79,7 +70,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// Use this for initialization
-	void Start () {
+	public void Start () {
 		// set camera field close up...
 		Camera.main.transform.position = startCameraPosition; 
 		addEventsToBlockControllers();
@@ -99,7 +90,7 @@ public class GameController : MonoBehaviour {
 	}
 
 	// add delegate event handlers to Block pieces
-	void addEventsToBlockControllers(){
+	private void addEventsToBlockControllers(){
 		for (int i = 0; i <= 3; i++){
 			for (int j = 0; j <= 3; j++){
 				
@@ -117,16 +108,13 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// handler for delegate events
-	void handlePieceChangingEvent(bool changeValue){
-		//print("handlePieceChangingEvent " + changeValue);
-		
+	public void handlePieceChangingEvent(bool changeValue){
 		if(changeValue) AudioSource.PlayClipAtPoint(userSelectAudio, new Vector3(5, 1, 2));
-		
 		CPUblockIsMoving = changeValue;
 	}
 	
-	// Update is called once per frame - 
-	void Update () {
+	// Update is called once per frame 
+	public void Update () {
 		// Handle Back Button
 		if (Input.GetKey (KeyCode.Escape)) {
 			Application.Quit();
@@ -163,7 +151,7 @@ public class GameController : MonoBehaviour {
 					list[i, j] = "usr";
 					currentPiece.GetComponent<CubeController>().enabledPiece = false;
 					//print ("User Found: " + x + " " + y);
-					
+
 					checkList();
 					
 					makeCPUMove(x, y);
@@ -206,7 +194,7 @@ public class GameController : MonoBehaviour {
 		setCPUPiece(selectedPieceX, selectedPieceY);
 	}
 	
-	void resetGame(){
+	public void resetGame(){
 		starSystem.Play();
 		StartCoroutine("readForNewGame");
 	}
@@ -221,15 +209,10 @@ public class GameController : MonoBehaviour {
 		for (int i = 0; i <= 3; i++){
 			for (int j = 0; j <= 3; j++){
 				//print (i + " " + j);
-				
 				if(i == (selectedX - 1) && j == (selectedY - 1)){
 					list[i, j] = "cpu";
-					
 					var x = i + 1;
 					var y = j + 1;
-					
-					//print (x + " " + y);
-					
 					cpuSelectPiece( getPiece(x, y) );
 				}
 				
@@ -238,7 +221,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// set CPU(opponent) Block Piece
-	void cpuSelectPiece(GameObject piece){
+	private void cpuSelectPiece(GameObject piece){
 		if(userWon) return;
 		
 		AudioSource.PlayClipAtPoint(cpuSelectAudio, new Vector3(5, 1, 2));
@@ -254,9 +237,6 @@ public class GameController : MonoBehaviour {
 		
 		CPUblockIsMoving = true;
 		StartCoroutine("moveBlockOut");
-		
-		//piece.GetComponent<CubeController>().cubeData = "pos:'" + piece.transform.position.x + "," 
-		//	+ piece.transform.position.y + "', owner:CPU"; 
 	}
 	
 	// "timed" subroutine - wait and change blocker position/block animation state
@@ -268,7 +248,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// get a reference to a Block Piece
-	GameObject getPiece(int x, int y){
+	private GameObject getPiece(int x, int y){
 		GameObject returnPiece = null;
 		
 		switch(x){
@@ -357,7 +337,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// Check whether user or CPU(opponent) won/lost
-	void checkList(){
+	private void checkList(){
 		
 		int userCount = 0;
 		int cpuCount = 0;
@@ -417,7 +397,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// play ending
-	void gameEnding(string playerWinner){
+	public void gameEnding(string playerWinner){
 		
 		switch (playerWinner){
 			case "usr":
@@ -443,7 +423,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// check whether player has piece in vertical/horizontal direction
-	bool checkPlayerVerHorz(string player){
+	private bool checkPlayerVerHorz(string player){
 		bool result = false;
 		
 		for (int i = 0; i <= 3; i++){
@@ -464,7 +444,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// check whether piece is in a Diagonal position
-	bool[] checkPlayerDiagonally(string player){
+	private bool[] checkPlayerDiagonally(string player){
 		bool result = false;
 		bool IsTopLeftBottomRight = false;
 		
@@ -497,7 +477,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// CPU(opponent) logic for current move - random
-	void makeCPUMove(int x, int y){
+	private void makeCPUMove(int x, int y){
 		GameObject currentPiece;
 		
 		int currentX = x;
@@ -544,9 +524,6 @@ public class GameController : MonoBehaviour {
 			whoopsClause();
 			return;
 		}
-		
-		//int backupCurrentX = currentX;
-		//int backupCurrentY = currentY;
 		
 		randDiagChance = Random.Range(0, 3);
 		diagIsSet = false;
@@ -614,8 +591,6 @@ public class GameController : MonoBehaviour {
 			}else{
 				//print ("backupCurrentX " + backupCurrentX + " backupCurrentY " + backupCurrentY + " diagIsSet " + diagIsSet);
 				makeCPUMove(x, y);
-				//list[backupCurrentX - 1, backupCurrentY - 1] = "cpu";
-				//cpuSelectPiece( getPiece(backupCurrentX, backupCurrentX) );
 			}
 		}else{
 			list[currentX - 1, currentY - 1] = "cpu";
@@ -626,7 +601,7 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// handle case if context of move is lost
-	void whoopsClause(){
+	private void whoopsClause(){
 		for (int i = 0; i <= 3; i++){
 			for (int j = 0; j <= 3; j++){
 				//print(list[i, j]);	
@@ -641,13 +616,10 @@ public class GameController : MonoBehaviour {
 	}
 	
 	// function to return random position
-	int[] varyPosChange(int x, int y){
+	private int[] varyPosChange(int x, int y){
 		int[] point =  new int[2];
-		
 		int rand = Random.Range(0, 2);
-		
-		//print("rand " + rand);
-		
+
 		if(rand == 1){
 			if((x + 1) <= 4){
 				x = x + 1;

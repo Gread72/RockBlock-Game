@@ -1,17 +1,32 @@
-﻿using UnityEngine;
+﻿/*
+ * GamePanelDisplay Class - Game Panel View
+ * 
+ * Note: This class handles UI and mediator of Game panel
+ * 
+ * @Dev/Design Dennis Biron 
+*/
+
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
-public class GamePanelDisplay : MonoBehaviour {
+public class GamePanelDisplay : MonoBehaviour
+{
 
-	private GameObject gameState;
-	public GameStatus currentGameStatus;
+    #region public variables
+    public Text statusTxt;
+    public Text instructTxt;
+    public Text resultsTxt;
+    public Button playButton;
+    #endregion
+
+    #region private variables
+    private GameObject gameState;
 	private GameObject gameController;
-	public GameController gameControllerScript;
-	public Text statusTxt;
-	public Text instructTxt;
-	public Text resultsTxt;
-	public Button playButton;
+    private GameStatus currentGameStatus;
+    private GameController gameControllerScript;
+    #endregion
+
 
 	// Use this for initialization
 	void Awake () {
@@ -32,22 +47,21 @@ public class GamePanelDisplay : MonoBehaviour {
 		gameControllerScript.onGameEnding  += handleGameEnding;
 	}
 	
-	void ResetStatus(){
+	private void ResetStatus(){
 		statusTxt.text = "Status:\nGames Played: " + currentGameStatus.gameNumber + 
 			"\nLoses: " + currentGameStatus.gamesPlayerLoses + " Wins: " + currentGameStatus.gamesPlayerWins + 
 				" Draws: " + currentGameStatus.gamesDraw;
 	}
 
-	void handleGameEnding(string response){
+	public void handleGameEnding(string response){
 		this.gameObject.SetActive(true);
 		ResetStatus();
 
 		instructTxt.enabled = false;
-		//playButton.GetComponent<Text>().text = "Play Again?";
-
 		resultsTxt.gameObject.SetActive(true);
 		resultsTxt.text = response;
 	}
+
 	public void onPlayButtonClick(){
 		this.gameObject.SetActive(false);
 

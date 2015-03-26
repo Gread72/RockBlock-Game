@@ -1,24 +1,43 @@
-﻿using UnityEngine;
+﻿/*
+ * GameStatus Class - Game Status VO
+ * 
+ * Note: Value object for the game status
+ * 
+ * @Dev/Design Dennis Biron 
+*/
+
+using UnityEngine;
 using System.Collections;
 
-public class GameStatus : MonoBehaviour {
+public class GameStatus : MonoBehaviour
+{
 
+    #region public variables
+    [SerializeField]
 	public int gamesPlayerWins;
+
+    [SerializeField]
 	public int gamesPlayerLoses;
-	public int gamesDraw;
+
+    [SerializeField]
+    public int gamesDraw;
+
+    [SerializeField]
 	public bool isFirstStart = true;
-	
-	void Awake() {
+    #endregion
+
+    #region private variables
+    private int _gameNumber = 0;
+    #endregion
+
+    void Awake() {
+        // don't destroy object throughout the game
         DontDestroyOnLoad(transform.gameObject);
     }
 	
-	private int _gameNumber = 0;
     public int gameNumber{
         //set the person name
-        set {
-			//changed = true;
-			this._gameNumber = value; 
-		}
+        set { this._gameNumber = value;}
         //get the person name 
         get { return this._gameNumber; }
     }

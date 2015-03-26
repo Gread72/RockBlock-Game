@@ -6,6 +6,7 @@ Obj/
 UnityGenerated/
 /Library/
 /Build/
+/Assets/UnityVS/
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
