@@ -18,6 +18,7 @@ public class GamePanelDisplay : MonoBehaviour
     public Text instructTxt;
     public Text resultsTxt;
     public Button playButton;
+    public Button exitButton;
     #endregion
 
     #region private variables
@@ -39,10 +40,12 @@ public class GamePanelDisplay : MonoBehaviour
 	void Start(){
 		if(currentGameStatus.isFirstStart == false){
 			this.gameObject.SetActive(false);
+            exitButton.gameObject.SetActive(true); // display exit button
 			gameControllerScript.enablePlay();
 		}else{
 			resultsTxt.gameObject.SetActive(false);
 			ResetStatus();
+            exitButton.gameObject.SetActive(false);
 		}
 		gameControllerScript.onGameEnding  += handleGameEnding;
 	}
@@ -54,24 +57,33 @@ public class GamePanelDisplay : MonoBehaviour
 	}
 
 	public void handleGameEnding(string response){
-		this.gameObject.SetActive(true);
-		ResetStatus();
+		this.gameObject.SetActive(true); // display Game Panel
+		ResetStatus(); // set game status text
 
-		instructTxt.enabled = false;
-		resultsTxt.gameObject.SetActive(true);
-		resultsTxt.text = response;
+        exitButton.gameObject.SetActive(false); // display exit button
+		instructTxt.enabled = false; // disable instruction text
+		resultsTxt.gameObject.SetActive(true); // display results text
+		resultsTxt.text = response; // set reposne text
 	}
 
 	public void onPlayButtonClick(){
-		this.gameObject.SetActive(false);
-
+		this.gameObject.SetActive(false); // hide game panel
+        
 		if(currentGameStatus.isFirstStart == true){
 			// call enablePlay
 			gameControllerScript.enablePlay();
+            exitButton.gameObject.SetActive(true); // display exit button
 		}else{
 			// kill with hammer approach
 			Application.LoadLevel("RockBlockGame");
 		}
-		currentGameStatus.isFirstStart = false;
+		currentGameStatus.isFirstStart = false; // first start is disabled
 	}
+
+    public void onExitGameClick()
+    {
+        exitButton.gameObject.SetActive(false); // display exit button
+        currentGameStatus.isFirstStart = false; // first start is disabled
+        gameControllerScript.exitGame();
+    }
 }

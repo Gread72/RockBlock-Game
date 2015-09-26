@@ -61,7 +61,6 @@ public class GameController : MonoBehaviour
 	private Material selectedMaterial;
     #endregion
 
-
 	public void Awake(){
 		startCameraPosition = new Vector3( 2.097379f, -2.172393f, 20f );
 		gameCameraPosition = new Vector3( 2.097379f, -2.172393f, -0.207406f );
@@ -77,13 +76,12 @@ public class GameController : MonoBehaviour
 		
 		gameState = GameObject.FindGameObjectsWithTag("Status")[0];
 		currentGameStatus = gameState.GetComponent<GameStatus>();
-		currentGameStatus.gameNumber++;
 		
 		if(currentGameStatus.isFirstStart == true){
 			// play initial audio
 			AudioSource.PlayClipAtPoint(spaceIntroAudio, new Vector3(5, 1, 2));
-		}
-
+        }
+        
 		starSystem.Play();
 
 		isBegining = true;
@@ -176,6 +174,7 @@ public class GameController : MonoBehaviour
 		starSystem.Stop();
 	}
 
+    // start game round
 	public void enablePlay(){
 		isBegining = false;
 		CPUblockIsMoving = true;
@@ -183,6 +182,12 @@ public class GameController : MonoBehaviour
 		
 		StartCoroutine("callStartGame");
 	}
+
+    // forefit game
+    public void exitGame()
+    {
+        gameEnding("cpu");
+    }
 
 	// "Timed" subroutinue
 	IEnumerator callStartGame(){
@@ -398,7 +403,9 @@ public class GameController : MonoBehaviour
 	
 	// play ending
 	public void gameEnding(string playerWinner){
-		
+
+        currentGameStatus.gameNumber++;
+
 		switch (playerWinner){
 			case "usr":
 			currentGameStatus.gamesPlayerWins++;
